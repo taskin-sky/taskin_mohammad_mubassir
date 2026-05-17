@@ -4,8 +4,8 @@ export const personalInfo = {
   phone: '+880 173 777 8252',
   location: 'Dhaka, Bangladesh',
   github: 'https://github.com/taskin-sky',
-  linkedin: 'https://linkedin.com/in/taskin',
-  portfolio: 'https://taskin-mubassir-portfolio.netlify.app',
+  linkedin: 'https://www.linkedin.com/in/taskin-mohammad-mubassir/',
+  portfolio: 'https://taskin-mohammad-mubassir.vercel.app/',
   bio: 'CSE Graduate from BRAC University passionate about full-stack development and machine learning.',
 };
 

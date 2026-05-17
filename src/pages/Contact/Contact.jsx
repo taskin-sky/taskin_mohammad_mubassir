@@ -118,7 +118,7 @@ export default function Contact() {
                     <FaGithub size={24} />
                   </a>
                   <a
-                    href="https://linkedin.com/in/taskin"
+                    href="https://www.linkedin.com/in/taskin-mohammad-mubassir/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-3 border border-gray-900 dark:border-gray-700 bg-gray-200 dark:bg-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"

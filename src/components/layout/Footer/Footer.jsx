@@ -19,7 +19,7 @@ export default function Footer() {
           {/* About Section */}
           <div>
             <h3 className="text-xl font-serif font-bold mb-4">
-              Taskin Mubassir
+              Taskin Mohammad Mubassir
             </h3>
             <p className="text-gray-400 text-sm leading-relaxed">
               CSE Graduate from BRAC University passionate about building web
@@ -73,9 +73,9 @@ export default function Footer() {
           <p>
             &copy; {currentYear} Taskin Mohammad Mubassir. All rights reserved.
           </p>
-          <p className="mt-2">
+          {/* <p className="mt-2">
             Built with React, Tailwind CSS, and Framer Motion
-          </p>
+          </p> */}
         </div>
       </div>
     </footer>
