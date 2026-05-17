@@ -1,0 +1,10 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://taskin-mubassir-portfolio.netlify.app/sitemap.xml
+
+# Disable certain paths (if needed)
+Disallow: /admin
+Disallow: /private

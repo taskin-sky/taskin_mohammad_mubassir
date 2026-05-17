@@ -1,0 +1,49 @@
+@media print {
+  /* Hide navigation, footer, and buttons */
+  header,
+  footer,
+  .no-print,
+  .fixed,
+  button:not(.keep-in-print) {
+    display: none !important;
+  }
+
+  /* Ensure dark mode prints properly */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Remove backgrounds from cards */
+  .bg-white,
+  .bg-gray-50,
+  .dark\:bg-gray-800 {
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep links visible */
+  a {
+    text-decoration: none !important;
+    color: black !important;
+  }
+
+  /* Ensure all text is black for printing */
+  .text-gray-600,
+  .text-gray-400,
+  .dark\:text-gray-400 {
+    color: black !important;
+  }
+
+  /* Add borders for better print readability */
+  .rounded-xl,
+  .shadow-lg {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure proper page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+}

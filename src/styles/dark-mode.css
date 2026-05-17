@@ -1,0 +1,84 @@
+/* Additional dark mode overrides */
+.dark {
+  color-scheme: dark;
+}
+
+/* Card dark mode improvements */
+.dark .shadow-lg,
+.dark .shadow-xl,
+.dark .shadow-2xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Input dark mode */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: rgb(31, 41, 55);
+  border-color: rgb(55, 65, 81);
+  color: rgb(243, 244, 246);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: rgb(59, 130, 246);
+  outline: none;
+}
+
+/* Button dark mode improvements */
+.dark button.bg-gray-100 {
+  background-color: rgb(31, 41, 55);
+}
+
+.dark button.bg-gray-100:hover {
+  background-color: rgb(55, 65, 81);
+}
+
+/* Link dark mode */
+.dark a:not(.text-blue-600):not(.text-white) {
+  color: rgb(156, 163, 175);
+}
+
+.dark a:not(.text-blue-600):not(.text-white):hover {
+  color: rgb(59, 130, 246);
+}
+
+/* Border dark mode */
+.dark .border-gray-200 {
+  border-color: rgb(55, 65, 81);
+}
+
+.dark .border-gray-300 {
+  border-color: rgb(55, 65, 81);
+}
+
+/* Prose dark mode for blog */
+.dark .prose {
+  color: rgb(209, 213, 219);
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+  color: rgb(243, 244, 246);
+}
+
+.dark .prose strong {
+  color: rgb(243, 244, 246);
+}
+
+.dark .prose code {
+  background-color: rgb(31, 41, 55);
+  color: rgb(243, 244, 246);
+}
+
+.dark .prose pre {
+  background-color: rgb(17, 24, 39);
+}
+
+.dark .prose blockquote {
+  border-left-color: rgb(59, 130, 246);
+  color: rgb(156, 163, 175);
+}
