@@ -8,10 +8,15 @@ import {
   FaCheckCircle,
   FaExclamationTriangle,
   FaLightbulb,
+  FaCode, // ✅ ADD THIS IMPORT
 } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 export default function ProjectModal({ project, isOpen, onClose }) {
   if (!project) return null;
+
+  const [modalImageIndex, setModalImageIndex] = useState(0);
 
   const getCategoryColor = (category) => {
     switch (category) {
@@ -53,27 +58,71 @@ export default function ProjectModal({ project, isOpen, onClose }) {
             </button>
 
             <div className="p-6 pt-0">
-              {/* Header Image */}
-              <div className="h-64 rounded-xl overflow-hidden mb-6 -mt-6">
-                <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                  {project.image ? (
+              {/* Header Image - IMPROVED VERSION */}
+              <div className="w-full rounded-xl overflow-hidden mb-6 -mt-6 bg-gradient-to-r from-blue-500 to-purple-600 relative group">
+                {project.images && project.images.length > 0 ? (
+                  <>
                     <img
-                      src={project.image}
+                      src={project.images[modalImageIndex]}
                       alt={project.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-auto max-h-[70vh] object-contain bg-gradient-to-r from-blue-500 to-purple-600"
                     />
-                  ) : (
-                    <div className="text-center text-white">
-                      <FaCode size={64} className="mx-auto mb-4" />
-                      <p className="text-xl font-semibold">{project.title}</p>
-                    </div>
-                  )}
-                </div>
+                    {project.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={() =>
+                            setModalImageIndex(
+                              (prev) =>
+                                (prev - 1 + project.images.length) %
+                                project.images.length
+                            )
+                          }
+                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all z-10"
+                        >
+                          <FaChevronLeft size={24} />
+                        </button>
+                        <button
+                          onClick={() =>
+                            setModalImageIndex(
+                              (prev) => (prev + 1) % project.images.length
+                            )
+                          }
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all z-10"
+                        >
+                          <FaChevronRight size={24} />
+                        </button>
+                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+                          {project.images.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setModalImageIndex(idx)}
+                              className={`h-2 rounded-full transition-all ${
+                                idx === modalImageIndex
+                                  ? 'bg-white w-6'
+                                  : 'bg-white bg-opacity-50 w-2 hover:w-3'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : project.image ? (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-auto max-h-[70vh] object-contain"
+                  />
+                ) : (
+                  <div className="w-full h-64 flex items-center justify-center">
+                    <FaCode size={64} className="text-white opacity-50" />
+                  </div>
+                )}
               </div>
 
               {/* Title and Category */}
               <div className="flex justify-between items-start mb-4 flex-wrap gap-2">
-                <h2 className="text-3xl font-serif font-bold">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 dark:text-white">
                   {project.title}
                 </h2>
                 <span
@@ -101,16 +150,20 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
               {/* Description */}
               <div className="mb-6">
-                <h3 className="text-xl font-semibold mb-3">Overview</h3>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                  Overview
+                </h3>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                   {project.longDescription || project.description}
                 </p>
               </div>
 
               {/* Features */}
-              {project.features && (
+              {project.features && project.features.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-3">Key Features</h3>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                    Key Features
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {project.features.map((feature, index) => (
                       <div key={index} className="flex items-start gap-2">
@@ -118,7 +171,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                           className="text-green-500 mt-1 flex-shrink-0"
                           size={16}
                         />
-                        <span className="text-gray-600 dark:text-gray-400">
+                        <span className="text-gray-600 dark:text-gray-400 text-sm">
                           {feature}
                         </span>
                       </div>
@@ -129,14 +182,14 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
               {/* Tech Stack */}
               <div className="mb-6">
-                <h3 className="text-xl font-semibold mb-3">
+                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                   Technologies Used
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {project.tech.map((tech, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm"
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300"
                     >
                       {tech}
                     </span>
@@ -148,7 +201,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               {project.challenges && project.solutions && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                    <h3 className="text-xl font-semibold mb-3 flex items-center gap-2 text-gray-900 dark:text-white">
                       <FaExclamationTriangle className="text-yellow-500" />
                       Challenges
                     </h3>
@@ -156,7 +209,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                       {project.challenges.map((challenge, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-yellow-500">•</span>
-                          <span className="text-gray-600 dark:text-gray-400">
+                          <span className="text-gray-600 dark:text-gray-400 text-sm">
                             {challenge}
                           </span>
                         </li>
@@ -164,7 +217,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                     </ul>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                    <h3 className="text-xl font-semibold mb-3 flex items-center gap-2 text-gray-900 dark:text-white">
                       <FaLightbulb className="text-blue-500" />
                       Solutions
                     </h3>
@@ -172,7 +225,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                       {project.solutions.map((solution, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-blue-500">•</span>
-                          <span className="text-gray-600 dark:text-gray-400">
+                          <span className="text-gray-600 dark:text-gray-400 text-sm">
                             {solution}
                           </span>
                         </li>

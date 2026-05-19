@@ -386,7 +386,20 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 pt-20 overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
+      {/* Background Effects */}
+      <div className="absolute inset-0">
+        {/* Demo */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
+
+        {/* Light mode gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 dark:opacity-0" />
+
+        {/* Dark mode solid white background */}
+        <div className="absolute inset-0 bg-custom" />
+
+        {/* Subtle pattern for dark mode (optional) */}
+        <div className="absolute inset-0 bg-grid-gray-900/[0.02] dark:bg-grid-white/[0.05] pointer-events-none" />
+      </div>
       <InteractiveParticles />
       <CodeRain />
       <FloatingShapes />
@@ -481,7 +494,7 @@ export default function HeroSection() {
 
         {/* Name with animation */}
         <motion.h1
-          className="text-5xl md:text-7xl font-serif font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent"
+          className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}

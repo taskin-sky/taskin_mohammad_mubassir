@@ -408,3 +408,13 @@ body,
 .dark .fixed.bg-black {
   background-color: rgba(0, 0, 0, 0.8);
 }
+
+/* Light mode background */
+.bg-custom {
+  background: linear-gradient(to bottom right, #dbccff, #cdd6e4, #cfc6ff);
+}
+
+/* Dark mode background */
+.dark .bg-custom {
+  background: linear-gradient(to bottom right, #0a1122, #121a27, #0b1220);
+}
