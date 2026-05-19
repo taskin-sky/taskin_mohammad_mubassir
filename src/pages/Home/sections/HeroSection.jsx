@@ -494,7 +494,7 @@ export default function HeroSection() {
 
         {/* Name with animation */}
         <motion.h1
-          className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent"
+          className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-900 dark:via-purple-600 dark:to-pink-600 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -545,7 +545,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300 mb-8 leading-relaxed relative"
+          className="max-w-2xl mx-auto text-gray-600 dark:text-blue-600 mb-8 leading-relaxed relative"
         >
           {personalInfo.bio}
           <motion.span
