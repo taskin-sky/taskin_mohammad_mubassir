@@ -22,6 +22,7 @@ import BlogPost from './pages/Blog/BlogPost';
 import Activities from './pages/Activities/Activities';
 import Contact from './pages/Contact/Contact';
 import Guestbook from './pages/Guestbook/Guestbook';
+import About from './pages/About/About';
 import SEO from './components/SEO';
 
 function App() {
@@ -54,6 +55,16 @@ function App() {
                       </PageTransition>
                     }
                   />
+
+                  <Route
+                    path="/about"
+                    element={
+                      <PageTransition>
+                        <About />
+                      </PageTransition>
+                    }
+                  />
+
                   <Route
                     path="/resume"
                     element={
@@ -62,6 +73,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   <Route
                     path="/projects"
                     element={
@@ -70,6 +82,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   <Route
                     path="/skills"
                     element={
@@ -78,6 +91,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   <Route
                     path="/blog"
                     element={
@@ -86,6 +100,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   <Route
                     path="/blog/:id"
                     element={
@@ -94,6 +109,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   <Route
                     path="/activities"
                     element={
@@ -102,6 +118,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   <Route
                     path="/contact"
                     element={
@@ -110,6 +127,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   <Route
                     path="/guestbook"
                     element={
@@ -118,6 +136,7 @@ function App() {
                       </PageTransition>
                     }
                   />
+
                   {/* 404 Page - Must be last */}
                   <Route
                     path="*"

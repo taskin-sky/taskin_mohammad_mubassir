@@ -1,11 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AnimatedSection from '../../../components/animations/AnimatedSection';
+import ImageCarousel from '../../Projects/components/ImageCarousel';
 import { projects } from '../../../data/projectsData';
 
 export default function FeaturedProjects() {
   // Get first 3 projects for featured section
   const featuredProjects = projects.slice(0, 3);
+
+  const handleQuickView = (project) => {
+    // Optional: Add modal or navigate to projects page
+    console.log('Quick view:', project.title);
+  };
 
   return (
     <AnimatedSection className="py-20 bg-gray-50 dark:bg-white">
@@ -31,9 +37,16 @@ export default function FeaturedProjects() {
               whileHover={{ y: -10 }}
               className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all"
             >
-              <div className="h-48 bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
-                <span className="text-4xl text-white">🚀</span>
-              </div>
+              {/* Image Carousel - Replaces the static gradient div */}
+              <ImageCarousel
+                images={
+                  project.images || (project.image ? [project.image] : [])
+                }
+                title={project.title}
+                onOpenModal={handleQuickView}
+                project={project}
+              />
+
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
                   {project.title}
