@@ -117,6 +117,8 @@ export const qaMapping = [
       'your name',
       'introduce',
       'tell me about yourself',
+      'about',
+      'taskin',
       'background',
     ],
     answer: `I'm ${personalInfo.name}, a ${chatbotKnowledge.role} from ${personalInfo.location}. ${personalInfo.bio} I'm passionate about building scalable web applications and solving real-world problems.`,
