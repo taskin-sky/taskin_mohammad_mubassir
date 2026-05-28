@@ -24,6 +24,7 @@ import Contact from './pages/Contact/Contact';
 import Guestbook from './pages/Guestbook/Guestbook';
 import About from './pages/About/About';
 import SEO from './components/SEO';
+import TRobo from './components/Chatbot/TRobo';
 
 function App() {
   const location = useLocation();
@@ -151,6 +152,7 @@ function App() {
             </main>
             <Footer />
             <BackToTop />
+            <TRobo />
           </div>
         </LoadingProvider>
       </SearchProvider>

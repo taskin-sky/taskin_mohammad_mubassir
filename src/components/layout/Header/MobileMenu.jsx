@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 
 const navItems = [
   { path: '/', label: 'Home' },
+  { path: '/about', label: 'About' },
   { path: '/resume', label: 'Resume' },
   { path: '/projects', label: 'Projects' },
   { path: '/skills', label: 'Skills' },
