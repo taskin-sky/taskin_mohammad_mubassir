@@ -482,7 +482,7 @@ export const projects = [
     ],
     liveLink: 'https://taskin-sky.github.io/nature-s-platter/',
     githubLink: 'https://github.com/taskin-sky/nature-s-platter',
-    images: ['./assets/images/projects/nature-platter/hero-screenshot.png'],
+    images: ['./assets/images/projects/nature-platter/nature-platter.png'],
     video: null,
     date: '2025',
     role: 'Frontend Designer & Developer',
