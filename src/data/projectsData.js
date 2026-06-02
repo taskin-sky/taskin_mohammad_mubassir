@@ -446,7 +446,9 @@ export const projects = [
     ],
     liveLink: 'https://tuitionrajshahi.vercel.app/',
     githubLink: 'https://github.com/taskin-sky/Tuition-Frontend',
-    images: ['./assets/images/projects/tuition-rajshahi/rajshahi-tuition.png'],
+    images: [
+      './assets/images/projects/tuition-rajshahi/tuition-rajshahi-home.png',
+    ],
     video: null,
     date: '2026',
     role: 'Frontend Developer',
