@@ -50,6 +50,14 @@ export const education = [
 
 export const experience = [
   {
+    title: 'Software Engineer',
+    company: 'INORIZON',
+    period: 'July 2026 – Present',
+    current: true,
+    description:
+      'Joined INORIZON as a Software Engineer in July 2026, beginning a new chapter in my professional engineering career.',
+  },
+  {
     title: 'Web Developer Intern',
     company: 'Business Automation Ltd.',
     location: 'Dhaka',

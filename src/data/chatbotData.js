@@ -181,7 +181,14 @@ export const qaMapping = [
   // Experience
   {
     keywords: ['experience', 'intern', 'job', 'work', 'professional', 'career'],
-    answer: `My professional experience:\n\n${experience.map((exp) => `💼 **${exp.title}** at ${exp.company}\n   📅 ${exp.period}\n   📍 ${exp.location}\n   ✅ ${exp.responsibilities.slice(0, 2).join('\n   ✅ ')}`).join('\n\n')}`,
+    answer: `My professional experience:\n\n${experience.map((exp) => [
+      `💼 **${exp.title}** at ${exp.company}`,
+      `   📅 ${exp.period}`,
+      exp.location ? `   📍 ${exp.location}` : null,
+      ...(exp.responsibilities ?? (exp.description ? [exp.description] : []))
+        .slice(0, 2)
+        .map((responsibility) => `   ✅ ${responsibility}`),
+    ].filter(Boolean).join('\n')).join('\n\n')}`,
   },
 
   // Achievements

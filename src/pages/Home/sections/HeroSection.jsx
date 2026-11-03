@@ -456,7 +456,7 @@ export default function HeroSection() {
 
             <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl relative z-10 overflow-hidden">
               <img
-                src="/taskin.png"
+                src="/Taskin-m.png"
                 alt="Taskin Mohammad Mubassir"
                 className="w-full h-full object-cover rounded-full"
               />

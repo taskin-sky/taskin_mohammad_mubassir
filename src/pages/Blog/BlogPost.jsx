@@ -1,262 +1,206 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
-  FaArrowLeft,
-  FaCalendarAlt,
-  FaClock,
-  FaEye,
-  FaHeart,
-  FaUser,
-  FaShare,
-  FaFacebook,
-  FaTwitter,
-  FaLinkedin,
-  FaCopy,
-} from 'react-icons/fa';
-import { blogPosts } from '../../data/blogData';
-import toast from 'react-hot-toast';
+  FiArrowLeft,
+  FiArrowUpRight,
+  FiClock,
+  FiHeart,
+  FiCopy,
+  FiCheck,
+  FiBookOpen,
+} from "react-icons/fi";
+import { blogPosts } from "../../data/blogData";
+import { articleContent, formatPostDate } from "./blogUtils";
+import JournalCover from "./JournalCover";
+import SEO from "../../components/SEO";
+import "./journal.css";
 
-const BlogPost = () => {
+export default function BlogPost() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [post, setPost] = useState(null);
+  const post = blogPosts.find((item) => String(item.id) === id);
   const [readingProgress, setReadingProgress] = useState(0);
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
-  const [showShareMenu, setShowShareMenu] = useState(false);
-
+  const [shareStatus, setShareStatus] = useState("");
+  const contentRef = useRef(null);
+  const content = post ? articleContent(post) : null;
   useEffect(() => {
-    const foundPost = blogPosts.find((p) => p.id === parseInt(id));
-    if (foundPost) {
-      setPost(foundPost);
-      setLikesCount(foundPost.likes);
-    } else {
-      navigate('/blog');
-    }
-  }, [id, navigate]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (window.scrollY / totalHeight) * 100;
-      setReadingProgress(progress);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleLike = () => {
-    if (!liked) {
-      setLiked(true);
-      setLikesCount((prev) => prev + 1);
-      toast.success('Thanks for liking this post!');
-    } else {
+    setShareStatus("");
+    try {
+      setLiked(localStorage.getItem(`journal-like-${id}`) === "true");
+    } catch {
       setLiked(false);
-      setLikesCount((prev) => prev - 1);
     }
-  };
-
-  const handleShare = (platform) => {
-    const url = window.location.href;
-    const text = `Check out this article: ${post.title}`;
-
-    let shareUrl = '';
-    switch (platform) {
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-        break;
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-        break;
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-        break;
-      case 'copy':
-        navigator.clipboard.writeText(url);
-        toast.success('Link copied to clipboard!');
-        return;
+  }, [id]);
+  useEffect(() => {
+    function updateProgress() {
+      if (!contentRef.current) return;
+      const bounds = contentRef.current.getBoundingClientRect();
+      const distance = bounds.height - window.innerHeight * 0.4;
+      setReadingProgress(
+        Math.max(
+          0,
+          Math.min(100, ((-bounds.top + 120) / Math.max(1, distance)) * 100),
+        ),
+      );
     }
-
-    if (shareUrl) {
-      window.open(shareUrl, '_blank', 'width=600,height=400');
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    return () => {
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
+    };
+  }, [id]);
+  function toggleLike() {
+    const next = !liked;
+    setLiked(next);
+    try {
+      localStorage.setItem(`journal-like-${id}`, String(next));
+    } catch {}
+  }
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareStatus("copied");
+    } catch {
+      setShareStatus("manual");
     }
-  };
-
-  if (!post) {
+  }
+  if (!post)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p>Loading...</p>
+      <div className="journal-page">
+        <div className="pf-wrap jl-missing">
+          <FiBookOpen />
+          <h1>That note isn't here.</h1>
+          <p>Explore the journal to find something else to read.</p>
+          <Link className="jl-button" to="/blog">
+            Back to the journal <FiArrowLeft />
+          </Link>
         </div>
       </div>
     );
-  }
-
   return (
-    <>
-      {/* Reading Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 z-50">
-        <div
-          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-200"
-          style={{ width: `${readingProgress}%` }}
-        />
+    <div className="journal-page jl-article-page">
+      <SEO
+        customMeta={{
+          title: `${post.title} | Taskin Mubassir`,
+          description: post.excerpt,
+        }}
+      />
+      <div className="jl-reading-progress" aria-hidden="true">
+        <span style={{ width: `${readingProgress}%` }} />
       </div>
-
-      <div className="min-h-screen py-20">
-        <div className="container mx-auto px-6 max-w-4xl">
-          {/* Back Button */}
-          <button
-            onClick={() => navigate('/blog')}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 mb-8 transition-colors"
-          >
-            <FaArrowLeft size={16} />
-            Back to Blog
-          </button>
-
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="mb-6">
-              <Link to={`/blog?category=${post.category}`}>
-                <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold">
-                  {post.category}
-                </span>
-              </Link>
-            </div>
-
-            <h1 className="text-3xl md:text-5xl font-serif font-bold mb-6">
-              {post.title}
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-2">
-                <FaUser size={14} />
-                <span>{post.author}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FaCalendarAlt size={14} />
-                <span>
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FaClock size={14} />
-                <span>{post.readTime} min read</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FaEye size={14} />
-                <span>{post.views} views</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Featured Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-8 rounded-2xl overflow-hidden"
-          >
-            {post.image ? (
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full h-auto"
-              />
-            ) : (
-              <div className="w-full h-96 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                <span className="text-6xl text-white">📝</span>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="prose prose-lg dark:prose-invert max-w-none mb-8"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-            {post.tags.map((tag, idx) => (
-              <Link key={idx} to={`/blog?search=${tag}`}>
-                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors">
-                  #{tag}
-                </span>
-              </Link>
-            ))}
-          </div>
-
-          {/* Engagement Bar */}
-          <div className="flex items-center justify-between pt-8 border-t border-gray-200 dark:border-gray-700">
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                liked
-                  ? 'bg-red-100 dark:bg-red-900 text-red-600'
-                  : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200'
-              }`}
-            >
-              <FaHeart className={liked ? 'fill-current' : ''} />
-              <span>{likesCount}</span>
-            </button>
-
-            <div className="relative">
-              <button
-                onClick={() => setShowShareMenu(!showShareMenu)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <FaShare />
-                Share
-              </button>
-
-              {showShareMenu && (
-                <div className="absolute bottom-full right-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 flex gap-2">
-                  <button
-                    onClick={() => handleShare('facebook')}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                  >
-                    <FaFacebook className="text-blue-600" />
-                  </button>
-                  <button
-                    onClick={() => handleShare('twitter')}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                  >
-                    <FaTwitter className="text-blue-400" />
-                  </button>
-                  <button
-                    onClick={() => handleShare('linkedin')}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                  >
-                    <FaLinkedin className="text-blue-700" />
-                  </button>
-                  <button
-                    onClick={() => handleShare('copy')}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                  >
-                    <FaCopy />
-                  </button>
-                </div>
-              )}
-            </div>
+      <div className="pf-wrap">
+        <div className="jl-article-header">
+          <Link className="jl-back-link" to="/blog">
+            <FiArrowLeft />
+            Back to the journal
+          </Link>
+          <p className="jl-eyebrow">
+            <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
+              {post.category}
+            </Link>{" "}
+            / FIELD NOTES
+          </p>
+          <h1>{post.title}</h1>
+          <p>{post.excerpt}</p>
+          <div className="jl-byline">
+            <img src="/Taskin-m.png" alt="" width="38" height="38" />
+            <span>
+              <strong>{post.author}</strong>
+              <small>Software Engineer · INORIZON</small>
+            </span>
+            <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+            <span>
+              <FiClock />
+              {post.readTime} min read
+            </span>
           </div>
         </div>
+        <div className="jl-article-cover">
+          <JournalCover post={post} />
+        </div>
+        <div className="jl-reading-layout">
+          <aside className="jl-toc">
+            <p>IN THIS ARTICLE</p>
+            <nav aria-label="Article contents">
+              {content.headings.map((heading, index) => (
+                <a key={heading.id} href={`#${heading.id}`}>
+                  <span>0{index + 1}</span>
+                  {heading.title}
+                </a>
+              ))}
+            </nav>
+            <Link to="/blog" className="jl-text-link">
+              More from the journal <FiArrowUpRight />
+            </Link>
+          </aside>
+          <div>
+            <article
+              ref={contentRef}
+              className="jl-prose"
+              dangerouslySetInnerHTML={{ __html: content.html }}
+            />
+            <div className="jl-article-tags">
+              {post.tags.map((tag) => (
+                <Link key={tag} to={`/blog?tag=${encodeURIComponent(tag)}`}>
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+            <div className="jl-article-actions">
+              <button
+                onClick={toggleLike}
+                aria-pressed={liked}
+                className={liked ? "jl-liked" : ""}
+              >
+                <FiHeart />
+                {post.likes + (liked ? 1 : 0)}
+                <span>{liked ? "Liked" : "Like this article"}</span>
+              </button>
+              <button onClick={copyLink}>
+                {shareStatus === "copied" ? <FiCheck /> : <FiCopy />}
+                {shareStatus === "copied" ? "Link copied" : "Copy link"}
+              </button>
+            </div>
+            <p className="jl-share-status" role="status">
+              {shareStatus === "copied"
+                ? "Article link copied to your clipboard."
+                : ""}
+            </p>
+            {shareStatus === "manual" && (
+              <label className="jl-manual-copy">
+                Copy this article link
+                <input
+                  readOnly
+                  value={window.location.href}
+                  onFocus={(event) => event.target.select()}
+                />
+              </label>
+            )}
+          </div>
+        </div>
+        <section className="jl-related">
+          <p className="jl-eyebrow">KEEP THE CURIOSITY GOING</p>
+          <h2>
+            Something else to <em>explore.</em>
+          </h2>
+          <div>
+            {blogPosts
+              .filter((item) => item.id !== post.id)
+              .slice(0, 2)
+              .map((item) => (
+                <Link key={item.id} to={`/blog/${item.id}`}>
+                  <span>
+                    {item.category} · {item.readTime} min read
+                  </span>
+                  <h3>{item.title}</h3>
+                  <FiArrowUpRight />
+                </Link>
+              ))}
+          </div>
+        </section>
       </div>
-    </>
+    </div>
   );
-};
-
-export default BlogPost;
+}

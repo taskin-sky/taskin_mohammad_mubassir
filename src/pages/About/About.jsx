@@ -1,436 +1,561 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer'; // ✅ FIXED: Import from correct package
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  FaMapMarkerAlt,
-  FaCalendarAlt,
+  FiArrowUpRight,
+  FiArrowDown,
+  FiArrowLeft,
+  FiArrowRight,
+  FiMapPin,
+  FiCode,
+  FiBriefcase,
+  FiBookOpen,
+  FiGlobe,
+  FiCpu,
+  FiCoffee,
+  FiCompass,
+  FiCheck,
+  FiX,
+  FiMaximize2,
+  FiLayers,
+  FiTarget,
+} from "react-icons/fi";
+import {
   FaGraduationCap,
-  FaCode,
-  FaRocket,
-  FaCoffee,
-  FaFutbol,
-  FaPlane,
-  FaBook,
-  FaStar,
   FaGithub,
-  FaLinkedin,
-  FaEnvelope,
-  FaQuoteLeft,
-  FaHeart,
-  FaCamera,
-} from 'react-icons/fa';
-import { aboutInfo, galleryImages } from '../../data/aboutData';
-import SEO from '../../components/SEO';
-import AnimatedSection from '../../components/animations/AnimatedSection';
+  FaLinkedinIn,
+  FaFutbol,
+} from "react-icons/fa";
+import { aboutInfo, galleryImages } from "../../data/aboutData";
+import { personalInfo } from "../../data/personalData";
+import { projects } from "../../data/projectsData";
+import { skillCategories } from "../../data/skillsData";
+import SEO from "../../components/SEO";
+import "./about.css";
 
-// Timeline Component
-// Enhanced Timeline Component
-// Compact Vertical Timeline
-const JourneyTimeline = () => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const { milestones } = aboutInfo.journey;
+const gallery = galleryImages;
+const filters = [
+  { id: "all", label: "All moments" },
+  { id: "milestones", label: "Milestones" },
+  { id: "travel", label: "Travel" },
+  { id: "sports", label: "Football" },
+];
+const goalIcons = [FiBriefcase, FiCode, FiGlobe, FiLayers];
+const factIcons = [
+  FiMapPin,
+  FiCode,
+  FaFutbol,
+  FiCoffee,
+  FiCompass,
+  FiBookOpen,
+  FiCpu,
+  FiTarget,
+];
 
+function SectionHeading({ number, label, children, description }) {
   return (
-    <div ref={ref} className="relative py-4">
-      {/* Vertical Line */}
-      <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 rounded-full" />
-
-      {milestones.map((milestone, index) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, x: -30 }}
-          animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.4, delay: index * 0.05 }}
-          className="relative pl-14 pb-8 last:pb-0"
-        >
-          {/* Dot */}
-          <div className="absolute left-4 top-1">
-            <div className="relative">
-              <div
-                className="absolute inset-0 rounded-full bg-blue-500 animate-ping opacity-75"
-                style={{
-                  width: '12px',
-                  height: '12px',
-                  left: '-2px',
-                  top: '-2px',
-                }}
-              />
-              <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
-            </div>
-          </div>
-
-          {/* Year Badge */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-white text-xs font-semibold mb-2">
-            <FaCalendarAlt size={10} />
-            <span>{milestone.year}</span>
-          </div>
-
-          {/* Content */}
-          <div className="flex items-start gap-2 mb-1">
-            <span className="text-xl">{milestone.icon}</span>
-            <h4 className="font-semibold text-gray-900 dark:text-white">
-              {milestone.event}
-            </h4>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 pl-9">
-            {milestone.description}
-          </p>
-        </motion.div>
-      ))}
+    <div className="ab-section-heading">
+      <p className="ab-eyebrow">
+        <span>{number} /</span> {label}
+      </p>
+      <h2>{children}</h2>
+      {description && <p className="ab-section-description">{description}</p>}
     </div>
   );
-};
-
-// Education Card Component
-const EducationCard = ({ edu, index }) => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, x: -30 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all"
-    >
-      <div className="flex items-start gap-4">
-        <div className="text-3xl">{edu.icon}</div>
-        <div className="flex-1">
-          <div className="flex justify-between items-start flex-wrap gap-2">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              {edu.level}
-            </h3>
-            <span className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
-              {edu.year}
-            </span>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            {edu.institution}
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-            {edu.location}
-          </p>
-          {(edu.gpa || edu.cgpa) && (
-            <p className="text-sm mt-2 inline-block px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-lg">
-              {edu.gpa ? `GPA: ${edu.gpa}` : `CGPA: ${edu.cgpa}`}
-            </p>
-          )}
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            {edu.description}
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-// Goal Card Component
-const GoalCard = ({ goal, index }) => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={inView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      whileHover={{ scale: 1.03 }}
-      className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 rounded-xl p-6 shadow-lg text-center"
-    >
-      <div className="text-4xl mb-3">{goal.icon}</div>
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-        {goal.title}
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-        {goal.description}
-      </p>
-      <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs">
-        {goal.timeline}
-      </span>
-    </motion.div>
-  );
-};
-
-// Fun Fact Card
-const FunFactCard = ({ fact, index }) => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-    >
-      <span className="text-2xl">{fact.icon}</span>
-      <span className="text-gray-700 dark:text-gray-300">{fact.fact}</span>
-    </motion.div>
-  );
-};
-
-// Gallery Component
-const Gallery = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  return (
-    <>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {galleryImages.map((img, index) => (
-          <motion.div
-            key={img.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            whileHover={{ scale: 1.05 }}
-            className="relative group cursor-pointer overflow-hidden rounded-xl aspect-square bg-gradient-to-r from-blue-500 to-purple-500"
-            onClick={() => setSelectedImage(img)}
-          >
-            {img.src ? (
-              <img
-                src={img.src}
-                alt={img.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <FaCamera size={32} className="text-white opacity-50" />
-              </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Lightbox */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div
-            className="max-w-4xl max-h-[90vh] relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="absolute -top-10 right-0 text-white text-2xl hover:text-gray-300"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✕
-            </button>
-            {selectedImage.src ? (
-              <img
-                src={selectedImage.src}
-                alt={selectedImage.title}
-                className="w-full h-full object-contain"
-              />
-            ) : (
-              <div className="w-96 h-96 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center rounded-xl">
-                <p className="text-white text-center">
-                  <FaCamera size={48} className="mx-auto mb-2" />
-                  {selectedImage.title}
-                </p>
-              </div>
-            )}
-            <p className="text-white text-center mt-4">{selectedImage.title}</p>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
+}
 
 export default function About() {
-  const stats = [
-    { label: 'Projects Completed', value: '15+', icon: '🚀' },
-    { label: 'Technologies', value: '20+', icon: '💻' },
-    { label: 'Coffee Consumed', value: '∞', icon: '☕' },
-    { label: 'Football Goals', value: '25+', icon: '⚽' },
-  ];
+  const [newestFirst, setNewestFirst] = useState(true);
+  const [filter, setFilter] = useState("all");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const dialogRef = useRef(null);
+  const milestones = newestFirst
+    ? [...aboutInfo.journey.milestones].reverse()
+    : aboutInfo.journey.milestones;
+  const visibleGallery = gallery.filter(
+    (image) =>
+      filter === "all" ||
+      (filter === "milestones"
+        ? ["achievement", "activity"].includes(image.category)
+        : image.category === filter),
+  );
+  const technologyCount = new Set(
+    skillCategories.flatMap((category) =>
+      category.skills.map((skill) => skill.name),
+    ),
+  ).size;
+
+  useEffect(() => {
+    if (!selectedImage) return;
+    const oldOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = oldOverflow;
+    };
+  }, [selectedImage]);
+
+  function openImage(image) {
+    setSelectedImage(image);
+    dialogRef.current.showModal();
+  }
+  function stepImage(direction) {
+    setSelectedImage((current) => {
+      const index = visibleGallery.findIndex(
+        (image) => image.id === current.id,
+      );
+      return visibleGallery[
+        (index + direction + visibleGallery.length) % visibleGallery.length
+      ];
+    });
+  }
 
   return (
-    <>
+    <div className="about-page">
       <SEO
         customMeta={{
-          title: 'About Me | Taskin Mohammad Mubassir',
+          title: "About | Taskin Mohammad Mubassir — Software Engineer",
           description:
-            'Learn about my journey, education, goals, and passion for technology. Get to know the person behind the code.',
+            "Meet Taskin Mohammad Mubassir, Software Engineer at INORIZON and BRAC University CSE graduate. Explore my journey, education, and life beyond the code.",
         }}
       />
-
-      <div className="min-h-screen py-20">
-        <div className="container mx-auto px-6">
-          {/* Header */}
-          <AnimatedSection>
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 dark:text-white mb-4">
-                About Me
-              </h1>
-              <div className="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
-              <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Get to know the person behind the code - my journey, passions,
-                and what drives me.
-              </p>
-            </div>
-          </AnimatedSection>
-
-          {/* Hero Section with Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            <AnimatedSection>
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 rounded-2xl p-8 shadow-lg">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-3xl text-white">
-                    <img src="/public/taskin.png" alt="" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {aboutInfo.name}
-                    </h2>
-                    <p className="text-blue-600 dark:text-blue-400">
-                      {aboutInfo.role}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-                    <FaMapMarkerAlt className="text-blue-500" />
-                    <span>From: {aboutInfo.hometown}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-                    <FaMapMarkerAlt className="text-purple-500" />
-                    <span>Currently: {aboutInfo.currentLocation}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-                    <FaCalendarAlt className="text-pink-500" />
-                    <span>Born: {aboutInfo.birthDate}</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <h3 className="font-semibold mb-2">Languages</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {aboutInfo.languages.map((lang, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-white dark:bg-gray-700 rounded-full text-sm"
-                      >
-                        {lang}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </AnimatedSection>
-
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center shadow-lg"
+      <div className="pf-wrap">
+        <section className="ab-intro" aria-labelledby="about-title">
+          <div className="ab-intro-copy">
+            <p className="ab-eyebrow">
+              <span>ABOUT ME</span> / THE PERSON BEHIND THE CODE
+            </p>
+            <h1 id="about-title">
+              A curious mind.
+              <br />A <em>builder</em> at heart<span>.</span>
+            </h1>
+            <p className="ab-lead">
+              I'm <strong>{aboutInfo.name}</strong>—a software engineer, a
+              lifelong learner, and someone who loves turning an idea into
+              something real.
+            </p>
+            <p className="ab-bio">
+              From Rajshahi to BRAC University, and now{" "}
+              <strong>INORIZON</strong>, every chapter has shaped how I think,
+              create, and solve problems. My interests stretch from full-stack
+              development to machine learning, robotics, and the occasional
+              football match.
+            </p>
+            <div className="ab-intro-actions">
+              <a href="#my-journey" className="ab-button">
+                Explore my journey <FiArrowDown />
+              </a>
+              <div className="ab-social">
+                <a
+                  href={personalInfo.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Taskin on GitHub"
                 >
-                  <div className="text-3xl mb-2">{stat.icon}</div>
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {stat.label}
-                  </div>
-                </motion.div>
-              ))}
+                  <FaGithub />
+                </a>
+                <a
+                  href={personalInfo.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Taskin on LinkedIn"
+                >
+                  <FaLinkedinIn />
+                </a>
+              </div>
             </div>
           </div>
-
-          {/* Journey Timeline */}
-          <AnimatedSection className="mb-16">
-            <h2 className="text-3xl font-serif font-bold text-center mb-8 text-gray-900 dark:text-white">
-              My Journey
-            </h2>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg">
-              <JourneyTimeline />
-            </div>
-          </AnimatedSection>
-
-          {/* Education Section */}
-          <AnimatedSection className="mb-16">
-            <h2 className="text-3xl font-serif font-bold text-center mb-8 text-gray-900 dark:text-white">
-              Education
-            </h2>
-            <div className="space-y-4">
-              {aboutInfo.education.map((edu, index) => (
-                <EducationCard key={index} edu={edu} index={index} />
-              ))}
-            </div>
-          </AnimatedSection>
-
-          {/* Goals Section */}
-          <AnimatedSection className="mb-16">
-            <h2 className="text-3xl font-serif font-bold text-center mb-8 text-gray-900 dark:text-white">
-              My Goals
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {aboutInfo.goals.map((goal, index) => (
-                <GoalCard key={index} goal={goal} index={index} />
-              ))}
-            </div>
-          </AnimatedSection>
-
-          {/* Fun Facts */}
-          <AnimatedSection className="mb-16">
-            <h2 className="text-3xl font-serif font-bold text-center mb-8 text-gray-900 dark:text-white">
-              Fun Facts
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              {aboutInfo.funFacts.map((fact, index) => (
-                <FunFactCard key={index} fact={fact} index={index} />
-              ))}
-            </div>
-          </AnimatedSection>
-
-          {/* Quote */}
-          <AnimatedSection className="mb-16">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-center text-white">
-              <FaQuoteLeft className="text-4xl mx-auto mb-4 opacity-50" />
-              <p className="text-xl md:text-2xl font-serif italic mb-4">
-                "Code is like poetry. Every line should have a purpose and tell
-                a story."
-              </p>
-              <p className="text-sm opacity-75">- Taskin Mohammad Mubassir</p>
-            </div>
-          </AnimatedSection>
-
-          {/* Gallery */}
-          <AnimatedSection>
-            <h2 className="text-3xl font-serif font-bold text-center mb-8 text-gray-900 dark:text-white">
-              Moments Gallery
-            </h2>
-            <Gallery />
-          </AnimatedSection>
-
-          {/* Call to Action */}
-          <AnimatedSection>
-            <div className="mt-12 text-center">
-              <div className="inline-flex gap-4">
-                <a
-                  href="/contact"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Get in Touch
-                </a>
-                <a
-                  href="/resume"
-                  className="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-medium hover:border-blue-600 dark:hover:border-blue-600 transition-colors"
-                >
-                  View Resume
-                </a>
+          <aside className="ab-profile" aria-label="Profile at a glance">
+            <div className="ab-profile-art">
+              <span className="ab-art-grid" aria-hidden="true" />
+              <span className="ab-orbit" aria-hidden="true" />
+              <span className="ab-art-star" aria-hidden="true">
+                ✳
+              </span>
+              <span className="ab-profile-code" aria-hidden="true">
+                &lt;always_learning /&gt;
+              </span>
+              <img
+                src="/Taskin-m.png"
+                alt="Taskin Mohammad Mubassir"
+                width="420"
+                height="420"
+              />
+              <div className="ab-engineer-badge">
+                <FiCode />
+                <span>
+                  SOFTWARE ENGINEER<strong>INORIZON</strong>
+                </span>
+                <FiArrowUpRight />
               </div>
             </div>
-          </AnimatedSection>
+            <div className="ab-profile-details">
+              <div>
+                <FiMapPin />
+                <span>
+                  Hometown<strong>{aboutInfo.hometown}</strong>
+                  <small className="ab-birth-year">
+                    Born {aboutInfo.birthDate}
+                  </small>
+                </span>
+              </div>
+              <div>
+                <FiCompass />
+                <span>
+                  Currently based in<strong>{aboutInfo.currentLocation}</strong>
+                </span>
+              </div>
+              <div className="ab-languages">
+                <FiGlobe />
+                <span>
+                  Languages<strong>{aboutInfo.languages.join(" · ")}</strong>
+                </span>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <div className="ab-stats" aria-label="A few things about me">
+          {[
+            {
+              Icon: FiLayers,
+              value: String(projects.length).padStart(2, "0"),
+              suffix: "+",
+              label: "Projects in my portfolio",
+            },
+            {
+              Icon: FiCode,
+              value: technologyCount,
+              suffix: "+",
+              label: "Technologies explored",
+            },
+            {
+              Icon: FaGraduationCap,
+              value: "2024",
+              label: "CSE graduate · BRAC University",
+            },
+            {
+              Icon: FiBriefcase,
+              value: "2026",
+              label: "Joined INORIZON · July",
+            },
+          ].map(({ Icon, value, suffix, label }) => (
+            <div key={label}>
+              <Icon />
+              <strong>
+                {value}
+                <span>{suffix}</span>
+              </strong>
+              <p>{label}</p>
+            </div>
+          ))}
         </div>
+
+        <section
+          id="my-journey"
+          className="ab-section ab-journey"
+          aria-labelledby="journey-heading"
+        >
+          <div className="ab-journey-intro">
+            <SectionHeading number="01" label="THE CHAPTERS SO FAR">
+              <span id="journey-heading">
+                My journey,
+                <br />
+                one <em>step</em> at a time.
+              </span>
+            </SectionHeading>
+            <p className="ab-section-description">
+              The milestones, small beginnings, and memorable moments that
+              brought me here.
+            </p>
+            <div className="ab-current-role">
+              <span className="ab-current-label">
+                <i /> THE CURRENT CHAPTER
+              </span>
+              <FiBriefcase />
+              <h3>Software Engineer</h3>
+              <p>
+                INORIZON <span>· Since July 2026</span>
+              </p>
+              <span className="ab-role-line" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="ab-timeline-panel">
+            <div className="ab-timeline-toolbar">
+              <span>
+                {aboutInfo.journey.start} — {aboutInfo.journey.present}
+                <small>{milestones.length} milestones</small>
+              </span>
+              <button
+                onClick={() => setNewestFirst(!newestFirst)}
+                aria-label={`Sort journey ${newestFirst ? "earliest" : "latest"} first`}
+              >
+                {newestFirst ? "Latest first" : "Earliest first"}{" "}
+                <FiArrowDown className={newestFirst ? "" : "ab-flipped"} />
+              </button>
+            </div>
+            <ol className="ab-timeline">
+              {milestones.map((milestone) => (
+                <li
+                  key={`${milestone.year}-${milestone.event}`}
+                  className={milestone.current ? "ab-timeline-current" : ""}
+                >
+                  <span className="ab-timeline-node" aria-hidden="true">
+                    {milestone.current ? <FiBriefcase /> : <span />}
+                  </span>
+                  <article>
+                    <div className="ab-milestone-meta">
+                      <time>{milestone.year}</time>
+                      {milestone.current && <span>CAREER MILESTONE</span>}
+                    </div>
+                    <h3>{milestone.event}</h3>
+                    <p>{milestone.description}</p>
+                  </article>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section
+          className="ab-section ab-education"
+          aria-labelledby="education-heading"
+        >
+          <SectionHeading
+            number="02"
+            label="THE FOUNDATION"
+            description="A foundation in computer science. A habit of never standing still."
+          >
+            <span id="education-heading">
+              Learning that <em>stays.</em>
+            </span>
+          </SectionHeading>
+          <div className="ab-education-grid">
+            {[...aboutInfo.education].reverse().map((edu, index) => (
+              <article
+                className={index === 0 ? "ab-degree-featured" : ""}
+                key={edu.level}
+              >
+                <div className="ab-education-top">
+                  <span className="ab-icon-tile">
+                    {index === 0 ? <FaGraduationCap /> : <FiBookOpen />}
+                  </span>
+                  <time>{edu.year}</time>
+                </div>
+                <p className="ab-education-level">
+                  {edu.level === "Bachelor's"
+                    ? "BSc · COMPUTER SCIENCE & ENGINEERING"
+                    : edu.level}
+                </p>
+                <h3>{edu.institution}</h3>
+                <p className="ab-education-description">{edu.description}</p>
+                <div className="ab-education-bottom">
+                  <span>
+                    <FiMapPin />
+                    {edu.location}
+                  </span>
+                  {(edu.gpa || edu.cgpa) && (
+                    <strong>
+                      {edu.cgpa ? `CGPA ${edu.cgpa}` : `GPA ${edu.gpa}`}
+                    </strong>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="ab-section ab-goals"
+          aria-labelledby="goals-heading"
+        >
+          <SectionHeading
+            number="03"
+            label="ALWAYS MOVING FORWARD"
+            description="One milestone reached. More possibilities ahead."
+          >
+            <span id="goals-heading">
+              What's <em>next?</em>
+            </span>
+          </SectionHeading>
+          <div className="ab-goal-grid">
+            {aboutInfo.goals.map((goal, index) => {
+              const Icon = goalIcons[index];
+              return (
+                <article
+                  key={goal.title}
+                  className={goal.achieved ? "ab-goal-achieved" : ""}
+                >
+                  <div className="ab-goal-top">
+                    <Icon />
+                    <small>0{index + 1}</small>
+                  </div>
+                  <h3>{goal.title}</h3>
+                  <p>{goal.description}</p>
+                  <span className="ab-goal-status">
+                    {goal.achieved ? <FiCheck /> : <FiTarget />}
+                    {goal.timeline}
+                  </span>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section
+          className="ab-section ab-beyond"
+          aria-labelledby="beyond-heading"
+        >
+          <SectionHeading number="04" label="OFF THE CLOCK">
+            <span id="beyond-heading">
+              Beyond the <em>keyboard.</em>
+            </span>
+          </SectionHeading>
+          <div className="ab-facts">
+            {aboutInfo.funFacts.map((fact, index) => {
+              const Icon = factIcons[index];
+              return (
+                <div key={fact.fact}>
+                  <Icon />
+                  <span>{fact.fact}</span>
+                </div>
+              );
+            })}
+          </div>
+          <blockquote className="ab-quote">
+            <span aria-hidden="true">“</span>
+            <p>
+              Code is like poetry. Every line should have a purpose and tell a
+              story.
+            </p>
+            <cite>Taskin Mohammad Mubassir</cite>
+            <FiCode aria-hidden="true" />
+          </blockquote>
+        </section>
+
+        <section
+          className="ab-section ab-moments"
+          aria-labelledby="moments-heading"
+        >
+          <div className="ab-gallery-heading">
+            <SectionHeading
+              number="05"
+              label="LIFE IN FRAMES"
+              description="A few moments worth keeping—from graduation to the great outdoors."
+            >
+              <span id="moments-heading">
+                Collected <em>moments.</em>
+              </span>
+            </SectionHeading>
+            <span className="ab-gallery-note">
+              <FiMaximize2 /> Click to take a closer look
+            </span>
+          </div>
+          <div className="ab-gallery-filters" aria-label="Filter gallery">
+            {filters.map((item) => (
+              <button
+                key={item.id}
+                aria-pressed={filter === item.id}
+                onClick={() => setFilter(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+            <span aria-live="polite">{visibleGallery.length} moments</span>
+          </div>
+          <div className="ab-gallery">
+            {visibleGallery.map((image, index) => (
+              <button
+                key={image.id}
+                onClick={() => openImage(image)}
+                aria-label={`Enlarge ${image.title}`}
+              >
+                <img src={image.src} alt={image.title} loading="lazy" />
+                <span className="ab-gallery-index">0{index + 1}</span>
+                <span className="ab-gallery-caption">
+                  <span>
+                    <small>{image.category}</small>
+                    <strong>{image.title}</strong>
+                  </span>
+                  <FiArrowUpRight />
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="ab-connect">
+          <div>
+            <p className="ab-eyebrow">GOOD THINGS START WITH A CONVERSATION</p>
+            <h2>
+              Let's make the next
+              <br />
+              chapter <em>interesting.</em>
+            </h2>
+          </div>
+          <div>
+            <Link to="/contact" className="ab-button">
+              Get in touch <FiArrowUpRight />
+            </Link>
+            <Link to="/resume" className="ab-resume-link">
+              Explore my résumé <FiArrowUpRight />
+            </Link>
+          </div>
+          <span className="ab-connect-star" aria-hidden="true">
+            ✳
+          </span>
+        </section>
       </div>
-    </>
+
+      <dialog
+        className="ab-lightbox"
+        ref={dialogRef}
+        aria-labelledby="gallery-caption"
+        onClose={() => setSelectedImage(null)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) dialogRef.current.close();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            stepImage(1);
+          }
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            stepImage(-1);
+          }
+        }}
+      >
+        {selectedImage && (
+          <div className="ab-lightbox-inner">
+            <div className="ab-lightbox-top">
+              <span>
+                COLLECTED MOMENTS /{" "}
+                {String(
+                  visibleGallery.findIndex(
+                    (image) => image.id === selectedImage.id,
+                  ) + 1,
+                ).padStart(2, "0")}
+              </span>
+              <button
+                autoFocus
+                onClick={() => dialogRef.current.close()}
+                aria-label="Close image"
+              >
+                <FiX />
+              </button>
+            </div>
+            <img src={selectedImage.src} alt={selectedImage.title} />
+            <div className="ab-lightbox-bottom">
+              <button onClick={() => stepImage(-1)} aria-label="Previous image">
+                <FiArrowLeft />
+              </button>
+              <p id="gallery-caption">{selectedImage.title}</p>
+              <button onClick={() => stepImage(1)} aria-label="Next image">
+                <FiArrowRight />
+              </button>
+            </div>
+          </div>
+        )}
+      </dialog>
+    </div>
   );
 }

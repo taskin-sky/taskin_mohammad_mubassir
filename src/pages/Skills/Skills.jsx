@@ -1,382 +1,593 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  FaCode,
-  FaHeart,
-  FaChartLine,
-  FaCertificate,
-  FaRocket,
-} from 'react-icons/fa';
+  FiArrowUpRight,
+  FiArrowRight,
+  FiCode,
+  FiServer,
+  FiDatabase,
+  FiTool,
+  FiLayers,
+  FiAward,
+  FiTarget,
+  FiMessageSquare,
+  FiUsers,
+  FiClock,
+  FiCompass,
+  FiRefreshCw,
+  FiCheck,
+  FiTrendingUp,
+} from "react-icons/fi";
+import {
+  SiReact,
+  SiHtml5,
+  SiJavascript,
+  SiTailwindcss,
+  SiBootstrap,
+  SiNodedotjs,
+  SiExpress,
+  SiPhp,
+  SiLaravel,
+  SiPython,
+  SiMongodb,
+  SiMysql,
+  SiGit,
+  SiPostman,
+  SiFigma,
+  SiTypescript,
+  SiNextdotjs,
+  SiGraphql,
+  SiDocker,
+} from "react-icons/si";
 import {
   skillCategories,
   softSkills,
   learningPath,
   certifications,
-} from '../../data/skillsData';
-import AnimatedSection from '../../components/animations/AnimatedSection';
-import SkillBar from './components/SkillBar';
-import SoftSkillCard from './components/SoftSkillCard';
-import LearningPathCard from './components/LearningPathCard';
-import CertificationCard from './components/CertificationCard';
-import SEO from '../../components/SEO';
+} from "../../data/skillsData";
+import SEO from "../../components/SEO";
+import { FaCss3Alt } from "react-icons/fa";
+import "./skills.css";
 
-// Stats Counter Component
-const StatCounter = ({ end, label, icon: Icon, suffix = '' }) => {
-  const [count, setCount] = useState(0);
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.5 });
-
-  useEffect(() => {
-    if (inView) {
-      let start = 0;
-      const duration = 2000;
-      const increment = end / (duration / 16);
-
-      const timer = setInterval(() => {
-        start += increment;
-        if (start >= end) {
-          setCount(end);
-          clearInterval(timer);
-        } else {
-          setCount(Math.floor(start));
-        }
-      }, 16);
-
-      return () => clearInterval(timer);
-    }
-  }, [inView, end]);
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      className="text-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 rounded-xl"
-    >
-      <div className="text-4xl mb-3 flex justify-center">{Icon}</div>
-      <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-        {count}
-        {suffix}
-      </div>
-      <div className="text-gray-600 dark:text-gray-400 text-sm">{label}</div>
-    </motion.div>
-  );
+const skillIcons = {
+  "React.js": SiReact,
+  HTML5: SiHtml5,
+  CSS3: FaCss3Alt,
+  JavaScript: SiJavascript,
+  "Tailwind CSS": SiTailwindcss,
+  Bootstrap: SiBootstrap,
+  "Node.js": SiNodedotjs,
+  "Express.js": SiExpress,
+  PHP: SiPhp,
+  Laravel: SiLaravel,
+  Python: SiPython,
+  MongoDB: SiMongodb,
+  MySQL: SiMysql,
+  "Git/GitHub": SiGit,
+  Postman: SiPostman,
+  Figma: SiFigma,
+  TypeScript: SiTypescript,
+  "Next.js": SiNextdotjs,
+  GraphQL: SiGraphql,
+  Docker: SiDocker,
+  AWS: FiLayers,
 };
+const categories = [
+  {
+    label: "Frontend",
+    Icon: FiCode,
+    description:
+      "Responsive interfaces, thoughtful interactions, and a focus on the details that make the web feel good to use.",
+  },
+  {
+    label: "Backend",
+    Icon: FiServer,
+    description:
+      "Server-side applications, RESTful APIs, and the logic that connects an interface to useful data.",
+  },
+  {
+    label: "Databases",
+    Icon: FiDatabase,
+    description:
+      "Structured data, practical schemas, and queries that help applications work reliably.",
+  },
+  {
+    label: "Tools & workflow",
+    Icon: FiTool,
+    description:
+      "The tools behind the work: version control, API testing, and collaborative interface design.",
+  },
+];
+const softIcons = [
+  FiTarget,
+  FiMessageSquare,
+  FiUsers,
+  FiClock,
+  FiCompass,
+  FiRefreshCw,
+];
+const allSkills = skillCategories.flatMap((category) => category.skills);
+const groups = [
+  { name: "Strong foundation", range: "80–100%", min: 80, max: 100 },
+  { name: "Working proficiency", range: "60–79%", min: 60, max: 79 },
+  { name: "Developing", range: "0–59%", min: 0, max: 59 },
+];
 
-// Category Tabs Component
-const CategoryTabs = ({ categories, activeTab, onTabChange }) => {
+function Meter({ name, value, learning = false }) {
   return (
-    <div className="flex flex-wrap justify-center gap-3 mb-8">
-      {categories.map((category) => (
-        <button
-          key={category.name}
-          onClick={() => onTabChange(category.name)}
-          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${
-            activeTab === category.name
-              ? 'bg-blue-600 text-white shadow-lg scale-105'
-              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-          }`}
-        >
-          <span className="text-xl">{category.icon}</span>
-          <span>{category.name}</span>
-        </button>
-      ))}
+    <div
+      className="sk-meter"
+      role={learning ? "progressbar" : "meter"}
+      aria-label={name}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={value}
+    >
+      <span style={{ width: `${value}%` }} />
     </div>
   );
-};
+}
 
-// Skill Heatmap Component
-const SkillHeatmap = ({ skills }) => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.3 });
-
-  const expertSkills = skills.filter((s) => s.level >= 80);
-  const advancedSkills = skills.filter((s) => s.level >= 60 && s.level < 80);
-  const intermediateSkills = skills.filter(
-    (s) => s.level >= 40 && s.level < 60
-  );
-
+function SectionHeading({ number, label, title, description }) {
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6 }}
-      className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg"
-    >
-      <h3 className="text-xl font-serif font-bold mb-6 flex items-center gap-2">
-        <FaChartLine className="text-blue-600" />
-        Skill Distribution
-      </h3>
-
-      <div className="space-y-6">
-        <div>
-          <div className="flex justify-between mb-2">
-            <span className="font-medium">Expert (80-100%)</span>
-            <span className="text-sm text-gray-500">
-              {expertSkills.length} skills
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {expertSkills.map((skill) => (
-              <span
-                key={skill.name}
-                className="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full text-sm"
-              >
-                {skill.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between mb-2">
-            <span className="font-medium">Advanced (60-79%)</span>
-            <span className="text-sm text-gray-500">
-              {advancedSkills.length} skills
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {advancedSkills.map((skill) => (
-              <span
-                key={skill.name}
-                className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
-              >
-                {skill.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between mb-2">
-            <span className="font-medium">Intermediate (40-59%)</span>
-            <span className="text-sm text-gray-500">
-              {intermediateSkills.length} skills
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {intermediateSkills.map((skill) => (
-              <span
-                key={skill.name}
-                className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded-full text-sm"
-              >
-                {skill.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </motion.div>
+    <div className="sk-section-heading">
+      <p className="sk-eyebrow">
+        <span>{number} /</span> {label}
+      </p>
+      <h2>{title}</h2>
+      {description && <p>{description}</p>}
+    </div>
   );
-};
+}
 
 export default function Skills() {
-  const [activeTab, setActiveTab] = useState(skillCategories[0].name);
-  const [selectedCategory, setSelectedCategory] = useState(skillCategories[0]);
-
-  // Calculate total skills
-  const totalSkills = skillCategories.reduce(
-    (acc, cat) => acc + cat.skills.length,
-    0
+  const [activeIndex, setActiveIndex] = useState(0);
+  const tabsRef = useRef([]);
+  const category = skillCategories[activeIndex];
+  const categoryMeta = categories[activeIndex];
+  const CategoryIcon = categoryMeta.Icon;
+  const strongest = category.skills.reduce((best, skill) =>
+    skill.level > best.level ? skill : best,
   );
-  const averageProficiency = Math.round(
-    skillCategories.reduce(
-      (acc, cat) =>
-        acc + cat.skills.reduce((sum, skill) => sum + skill.level, 0),
-      0
-    ) / totalSkills
+  const average = Math.round(
+    category.skills.reduce((sum, skill) => sum + skill.level, 0) /
+      category.skills.length,
   );
+  const circumference = 2 * Math.PI * 46;
 
-  const stats = [
-    { end: totalSkills, label: 'Technical Skills', icon: <FaCode /> },
-    { end: softSkills.length, label: 'Soft Skills', icon: <FaHeart /> },
-    {
-      end: averageProficiency,
-      label: 'Avg Proficiency',
-      icon: <FaChartLine />,
-      suffix: '%',
-    },
-    {
-      end: certifications.length,
-      label: 'Certifications',
-      icon: <FaCertificate />,
-    },
-  ];
-
-  useEffect(() => {
-    const category = skillCategories.find((cat) => cat.name === activeTab);
-    setSelectedCategory(category);
-  }, [activeTab]);
-
-  // Get all skills for heatmap
-  const allSkills = skillCategories.flatMap((cat) => cat.skills);
+  function handleTabKey(event, index) {
+    const next =
+      event.key === "ArrowRight"
+        ? (index + 1) % categories.length
+        : event.key === "ArrowLeft"
+          ? (index - 1 + categories.length) % categories.length
+          : event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? categories.length - 1
+              : null;
+    if (next === null) return;
+    event.preventDefault();
+    setActiveIndex(next);
+    tabsRef.current[next]?.focus();
+  }
 
   return (
-    <>
+    <div className="skills-page">
       <SEO />
-      <div className="min-h-screen py-20">
-        <div className="container mx-auto px-6">
-          {/* Header */}
-          <AnimatedSection>
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-                Skills & Expertise
-              </h1>
-              <div className="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
-              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                A comprehensive overview of my technical capabilities, tools,
-                and technologies I work with to build amazing digital
-                experiences.
-              </p>
+      <div className="pf-wrap">
+        <section className="sk-intro" aria-labelledby="skills-title">
+          <div>
+            <p className="sk-eyebrow">
+              <span>SKILLS & EXPERTISE</span> / THE TOOLS BEHIND THE WORK
+            </p>
+            <h1 id="skills-title">
+              The right tools.
+              <br />A <em>builder's</em> mindset<span>.</span>
+            </h1>
+            <p>
+              From an interface's first pixel to the data behind it,
+              <br className="sk-desktop-break" /> here's the toolkit I use to
+              bring ideas to life.
+            </p>
+            <a href="#technical-toolkit" className="sk-text-link">
+              Explore my toolkit <FiArrowUpRight />
+            </a>
+          </div>
+          <div className="sk-intro-art" aria-hidden="true">
+            <span className="sk-art-grid" />
+            <span className="sk-orbit sk-orbit-outer" />
+            <span className="sk-orbit sk-orbit-inner" />
+            <span className="sk-art-core">
+              <FiCode />
+              <small>BUILD. LEARN. REPEAT.</small>
+            </span>
+            <span className="sk-orbit-tech sk-art-react">
+              <SiReact />
+            </span>
+            <span className="sk-orbit-tech sk-art-node">
+              <SiNodedotjs />
+            </span>
+            <span className="sk-orbit-tech sk-art-db">
+              <SiMongodb />
+            </span>
+            <span className="sk-orbit-tech sk-art-python">
+              <SiPython />
+            </span>
+            <span className="sk-art-star">✳</span>
+          </div>
+        </section>
+        <div className="sk-overview">
+          {[
+            {
+              value: allSkills.length,
+              label: "Technical skills",
+              Icon: FiCode,
+            },
+            {
+              value: skillCategories.length,
+              label: "Areas of focus",
+              Icon: FiLayers,
+            },
+            {
+              value: learningPath.length,
+              label: "Technologies in progress",
+              Icon: FiTrendingUp,
+            },
+            {
+              value: certifications.length,
+              label: "Certifications & courses",
+              Icon: FiAward,
+            },
+          ].map(({ value, label, Icon }) => (
+            <div key={label}>
+              <Icon />
+              <strong>{String(value).padStart(2, "0")}</strong>
+              <span>{label}</span>
             </div>
-          </AnimatedSection>
+          ))}
+        </div>
 
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {stats.map((stat, index) => (
-              <StatCounter key={index} {...stat} />
+        <section
+          className="sk-section"
+          id="technical-toolkit"
+          aria-labelledby="technical-title"
+        >
+          <SectionHeading
+            number="01"
+            label="TECHNICAL TOOLKIT"
+            title={
+              <span id="technical-title">
+                From interface to <em>infrastructure.</em>
+              </span>
+            }
+            description="Explore each area. Proficiency is self-assessed from project work and hands-on experience."
+          />
+          <div
+            className="sk-tabs"
+            role="tablist"
+            aria-label="Technical skill categories"
+          >
+            {categories.map(({ label, Icon }, index) => (
+              <button
+                key={label}
+                ref={(element) => {
+                  tabsRef.current[index] = element;
+                }}
+                id={`skill-tab-${index}`}
+                role="tab"
+                aria-selected={activeIndex === index}
+                aria-controls="skill-panel"
+                tabIndex={activeIndex === index ? 0 : -1}
+                onClick={() => setActiveIndex(index)}
+                onKeyDown={(event) => handleTabKey(event, index)}
+              >
+                <Icon />
+                {label}
+                <span>{skillCategories[index].skills.length}</span>
+              </button>
             ))}
           </div>
-
-          {/* Technical Skills Section */}
-          <AnimatedSection className="mb-16">
-            <div className="mb-8">
-              <h2 className="text-3xl font-serif font-bold text-center mb-3">
-                Technical Skills
-              </h2>
-              <p className="text-center text-gray-600 dark:text-gray-400">
-                Proficiency levels based on professional experience and project
-                work
-              </p>
-            </div>
-
-            {/* Category Tabs */}
-            <CategoryTabs
-              categories={skillCategories}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-
-            {/* Skills Display */}
-            {selectedCategory && (
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    {selectedCategory.skills.map((skill, index) => (
-                      <SkillBar key={skill.name} skill={skill} index={index} />
-                    ))}
-                  </div>
-
-                  {/* Skill Details Card */}
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 rounded-xl p-6">
-                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                      <span className="text-2xl">{selectedCategory.icon}</span>
-                      {selectedCategory.name} Insights
-                    </h3>
-                    <div className="space-y-3">
-                      <p className="text-gray-600 dark:text-gray-400">
-                        {selectedCategory.name === 'Frontend Development' &&
-                          'Building responsive, interactive user interfaces with modern frameworks and libraries.'}
-                        {selectedCategory.name === 'Backend Development' &&
-                          'Creating robust server-side applications and RESTful APIs.'}
-                        {selectedCategory.name === 'Database' &&
-                          'Designing efficient database schemas and writing optimized queries.'}
-                        {selectedCategory.name === 'Tools & Others' &&
-                          'Utilizing industry-standard tools for development, testing, and deployment.'}
-                      </p>
-                      <div className="pt-4">
-                        <div className="flex justify-between text-sm mb-2">
-                          <span>Strongest Skill:</span>
-                          <span className="font-semibold text-blue-600">
-                            {
-                              selectedCategory.skills.reduce((max, skill) =>
-                                skill.level > max.level ? skill : max
-                              ).name
-                            }
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span>Experience Level:</span>
-                          <span>
-                            {selectedCategory.skills.length} technologies
-                            mastered
-                          </span>
-                        </div>
+          <div
+            id="skill-panel"
+            role="tabpanel"
+            aria-labelledby={`skill-tab-${activeIndex}`}
+            tabIndex={0}
+            className="sk-category-panel"
+          >
+            <div className="sk-technical-grid">
+              {category.skills.map((skill) => {
+                const Icon = skillIcons[skill.name] || FiCode;
+                return (
+                  <article className="sk-tech-card" key={skill.name}>
+                    <div className="sk-tech-top">
+                      <span className="sk-tech-icon">
+                        <Icon />
+                      </span>
+                      <div>
+                        <h3>{skill.name}</h3>
+                        <span>
+                          {skill.years} {skill.years === 1 ? "year" : "years"}{" "}
+                          of experience
+                        </span>
                       </div>
+                      <strong>
+                        {skill.level}
+                        <small>%</small>
+                      </strong>
+                    </div>
+                    <Meter
+                      name={`${skill.name} proficiency`}
+                      value={skill.level}
+                    />
+                    <div className="sk-tech-bottom">
+                      <span>
+                        {skill.level >= 80
+                          ? "Strong foundation"
+                          : skill.level >= 60
+                            ? "Working proficiency"
+                            : "Developing"}
+                      </span>
+                      <FiCheck />
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            <aside className="sk-insights">
+              <div className="sk-insight-header">
+                <CategoryIcon />
+                <span>CATEGORY SNAPSHOT</span>
+              </div>
+              <h3>{category.name}</h3>
+              <p>{categoryMeta.description}</p>
+              <div className="sk-proficiency-ring">
+                <svg
+                  viewBox="0 0 120 120"
+                  role="img"
+                  aria-label={`${category.name} average self-assessed proficiency: ${average}%`}
+                >
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    fill="none"
+                    stroke="var(--pf-line)"
+                    strokeWidth="5"
+                  />
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    fill="none"
+                    stroke="var(--pf-accent)"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(circumference * average) / 100} ${circumference}`}
+                    transform="rotate(-90 60 60)"
+                  />
+                </svg>
+                <div>
+                  <strong>
+                    {average}
+                    <span>%</span>
+                  </strong>
+                  <small>CATEGORY AVERAGE</small>
+                </div>
+              </div>
+              <dl>
+                <div>
+                  <dt>Strongest skill</dt>
+                  <dd>{strongest.name}</dd>
+                </div>
+                <div>
+                  <dt>Tools in this area</dt>
+                  <dd>{category.skills.length} technologies</dd>
+                </div>
+              </dl>
+              <Link to="/projects" className="sk-text-link">
+                See the skills in action <FiArrowUpRight />
+              </Link>
+            </aside>
+          </div>
+          <div className="sk-distribution">
+            <div className="sk-distribution-heading">
+              <FiLayers />
+              <h3>The bigger picture</h3>
+              <span>
+                {allSkills.length} skills across {skillCategories.length}{" "}
+                disciplines
+              </span>
+            </div>
+            <div className="sk-distribution-grid">
+              {groups.map((group, index) => {
+                const matching = allSkills.filter(
+                  (skill) =>
+                    skill.level >= group.min && skill.level <= group.max,
+                );
+                return (
+                  <div
+                    key={group.name}
+                    className={`sk-skill-group sk-group-${index}`}
+                  >
+                    <div>
+                      <h4>
+                        <i />
+                        {group.name}
+                      </h4>
+                      <span>{matching.length}</span>
+                    </div>
+                    <small>{group.range}</small>
+                    <div className="sk-chips">
+                      {matching.length ? (
+                        matching.map((skill) => (
+                          <span key={skill.name}>{skill.name}</span>
+                        ))
+                      ) : (
+                        <p>No skills in this range yet.</p>
+                      )}
                     </div>
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="sk-section" aria-labelledby="soft-title">
+          <SectionHeading
+            number="02"
+            label="THE HUMAN SIDE"
+            title={
+              <span id="soft-title">
+                Better work starts with
+                <br />
+                <em>better collaboration.</em>
+              </span>
+            }
+            description="The habits and interpersonal skills I bring to every project and team."
+          />
+          <div className="sk-soft-grid">
+            {softSkills.map((skill, index) => {
+              const Icon = softIcons[index];
+              return (
+                <article key={skill.name}>
+                  <div className="sk-soft-top">
+                    <span>
+                      <Icon />
+                    </span>
+                    <small>0{index + 1}</small>
+                  </div>
+                  <h3>{skill.name}</h3>
+                  <p>{skill.description}</p>
+                  <div className="sk-soft-label">
+                    <span>Self-assessed proficiency</span>
+                    <strong>{skill.level}%</strong>
+                  </div>
+                  <Meter
+                    name={`${skill.name} proficiency`}
+                    value={skill.level}
+                  />
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="sk-section" aria-labelledby="learning-title">
+          <div className="sk-learning-heading">
+            <SectionHeading
+              number="03"
+              label="ALWAYS A WORK IN PROGRESS"
+              title={
+                <span id="learning-title">
+                  The next <em>chapter.</em>
+                </span>
+              }
+              description="What I'm learning now—and where my curiosity is taking me next."
+            />
+            <span className="sk-learning-badge">
+              <i />
+              LEARNING NEVER STOPS
+            </span>
+          </div>
+          <div className="sk-learning-grid">
+            {learningPath.map((item, index) => {
+              const Icon = skillIcons[item.name] || FiCode;
+              return (
+                <article
+                  key={item.name}
+                  className={index === 0 ? "sk-learning-featured" : ""}
+                >
+                  <div className="sk-learning-top">
+                    <span>
+                      <Icon />
+                    </span>
+                    <small>
+                      IN PROGRESS <FiTrendingUp />
+                    </small>
+                  </div>
+                  <h3>{item.name}</h3>
+                  <p>{item.description}</p>
+                  <div className="sk-learning-progress">
+                    <span>Learning progress</span>
+                    <strong>{item.progress}%</strong>
+                  </div>
+                  <Meter
+                    name={`${item.name} learning progress`}
+                    value={item.progress}
+                    learning
+                  />
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="sk-section" aria-labelledby="certifications-title">
+          <SectionHeading
+            number="04"
+            label="LEARNING MILESTONES"
+            title={
+              <span id="certifications-title">
+                Backed by <em>learning.</em>
+              </span>
+            }
+            description="Professional courses and certifications along the way."
+          />
+          <div className="sk-certificate-grid">
+            {certifications.map((certification) => (
+              <article key={certification.name}>
+                <div className="sk-cert-top">
+                  <span>
+                    <FiAward />
+                  </span>
+                  <time>{certification.year}</time>
                 </div>
-              </motion.div>
-            )}
-          </AnimatedSection>
+                <p>{certification.issuer}</p>
+                <h3>{certification.name}</h3>
+                <div className="sk-cert-bottom">
+                  <FiCheck />
+                  Course completed
+                  {certification.credential &&
+                    certification.credential !== "#" && (
+                      <a
+                        href={certification.credential}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`View ${certification.name} credential`}
+                      >
+                        <FiArrowUpRight />
+                      </a>
+                    )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
-          {/* Skill Heatmap */}
-          <AnimatedSection className="mb-16">
-            <SkillHeatmap skills={allSkills} />
-          </AnimatedSection>
-
-          {/* Soft Skills Section */}
-          <AnimatedSection className="mb-16">
-            <div className="mb-8">
-              <h2 className="text-3xl font-serif font-bold text-center mb-3">
-                Soft Skills
-              </h2>
-              <p className="text-center text-gray-600 dark:text-gray-400">
-                Essential interpersonal skills that make me an effective team
-                player
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {softSkills.map((skill, index) => (
-                <SoftSkillCard key={skill.name} skill={skill} index={index} />
-              ))}
-            </div>
-          </AnimatedSection>
-
-          {/* Learning Path Section */}
-          <AnimatedSection className="mb-16">
-            <div className="mb-8">
-              <h2 className="text-3xl font-serif font-bold text-center mb-3 flex items-center justify-center gap-2">
-                <FaRocket className="text-blue-600" />
-                Currently Learning
-              </h2>
-              <p className="text-center text-gray-600 dark:text-gray-400">
-                Technologies and skills I'm actively working on to level up
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {learningPath.map((item, index) => (
-                <LearningPathCard key={item.name} item={item} index={index} />
-              ))}
-            </div>
-          </AnimatedSection>
-
-          {/* Certifications Section */}
-          <AnimatedSection>
-            <div className="mb-8">
-              <h2 className="text-3xl font-serif font-bold text-center mb-3">
-                Certifications
-              </h2>
-              <p className="text-center text-gray-600 dark:text-gray-400">
-                Professional certifications and courses completed
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {certifications.map((cert, index) => (
-                <CertificationCard key={cert.name} cert={cert} index={index} />
-              ))}
-            </div>
-          </AnimatedSection>
-        </div>
+        <section className="sk-connect">
+          <div>
+            <p className="sk-eyebrow">
+              TOOLS MATTER. WHAT YOU BUILD MATTERS MORE.
+            </p>
+            <h2>
+              See the toolkit
+              <br />
+              in <em>action.</em>
+            </h2>
+          </div>
+          <div>
+            <Link to="/projects" className="sk-button">
+              Explore my projects <FiArrowUpRight />
+            </Link>
+            <Link to="/contact" className="sk-text-link">
+              Have something in mind? <FiArrowRight />
+            </Link>
+          </div>
+          <span aria-hidden="true">✳</span>
+        </section>
       </div>
-    </>
+    </div>
   );
 }

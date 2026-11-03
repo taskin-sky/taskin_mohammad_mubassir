@@ -250,25 +250,10 @@ const TRobo = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 group"
+          className="pf-chat-launcher fixed bottom-6 right-6 z-50 group"
+          aria-label="Open portfolio assistant"
         >
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-xl opacity-75 group-hover:opacity-100 transition-opacity" />
-            <div className="relative w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all flex items-center justify-center overflow-hidden">
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              >
-                <FaRobot size={28} />
-              </motion.div>
-            </div>
-            <motion.div
-              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="absolute inset-0 rounded-full border-2 border-blue-500"
-            />
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full animate-pulse shadow-lg" />
-          </div>
+          <FaRobot size={21} />
         </motion.button>
       )}
 
@@ -284,6 +269,7 @@ const TRobo = () => {
               isMinimized ? 'w-80 h-14' : 'w-[90vw] md:w-[420px] h-[600px]'
             }`}
             style={{
+              maxHeight: 'calc(100dvh - 100px)',
               background:
                 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.98) 100%)',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',

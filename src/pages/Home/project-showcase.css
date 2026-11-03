@@ -1,0 +1,344 @@
+/* Selected work: a graphic canvas above a clear, actionable project brief. */
+#selected-work .pf-project-grid {
+  gap: 24px;
+  align-items: stretch;
+}
+#selected-work .pf-project {
+  --project-ink: #91a764;
+  --project-glow: #9ebc6830;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--pf-line);
+  border-radius: 16px;
+  background: var(--pf-card);
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+#selected-work .project-1 {
+  --project-ink: #a38bd6;
+  --project-glow: #9c7cdb30;
+}
+#selected-work .project-2 {
+  --project-ink: #68aebd;
+  --project-glow: #64b4c630;
+}
+#selected-work .pf-project-image {
+  height: 260px;
+  border: 0;
+  border-bottom: 1px solid var(--pf-line);
+  border-radius: 0;
+  padding: 58px 27px 26px;
+  background:
+    radial-gradient(ellipse at 75% 20%, var(--project-glow), transparent 75%),
+    var(--pf-surface);
+  perspective: 900px;
+  isolation: isolate;
+}
+#selected-work .pf-project-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--project-ink) 1px, transparent 1px),
+    linear-gradient(90deg, var(--project-ink) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.08;
+  mask-image: linear-gradient(135deg, #000, transparent 85%);
+  transition: opacity 0.4s;
+}
+#selected-work .pf-project-graphic {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: -95px;
+  right: -65px;
+  border: 1px solid var(--project-ink);
+  border-radius: 50%;
+  opacity: 0.3;
+  z-index: -1;
+  transition: transform 0.6s ease;
+}
+#selected-work .pf-project-graphic::before,
+#selected-work .pf-project-graphic::after {
+  content: "";
+  position: absolute;
+  border: 1px solid var(--project-ink);
+  border-radius: 50%;
+  inset: 20px;
+}
+#selected-work .pf-project-graphic::after {
+  inset: 40px;
+}
+#selected-work .pf-project-visual-label {
+  position: absolute;
+  top: 21px;
+  left: 23px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--pf-muted);
+  font: 8px var(--font-mono);
+  letter-spacing: 1.2px;
+}
+#selected-work .pf-project-visual-label svg {
+  color: var(--project-ink);
+  font-size: 12px;
+}
+#selected-work .pf-project-number {
+  top: 15px;
+  left: auto;
+  right: 21px;
+  font-size: 24px;
+  letter-spacing: -1.5px;
+  color: var(--project-ink);
+  opacity: 0.6;
+}
+#selected-work .pf-project-window {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  border: 1px solid #ffffff28;
+  overflow: hidden;
+  transform: rotate(-3deg) translateY(5px);
+  box-shadow:
+    0 14px 30px #0003,
+    7px 7px 0 var(--project-glow);
+  transition:
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s;
+}
+#selected-work .project-1 .pf-project-window {
+  transform: rotate(2deg) translateY(5px);
+}
+#selected-work .pf-browser-bar {
+  height: 25px;
+  background: #eef0ea;
+}
+#selected-work .pf-browser-bar small {
+  font-size: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#selected-work .pf-project-window img {
+  height: calc(100% - 25px);
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+  transition: transform 0.6s ease;
+}
+#selected-work .pf-project-tech-mark {
+  position: absolute;
+  right: 16px;
+  bottom: 17px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--pf-line);
+  border-radius: 12px;
+  background: var(--pf-card);
+  color: var(--project-ink);
+  font-size: 23px;
+  box-shadow: 0 5px 18px #0002;
+  transform: rotate(8deg);
+  transition: transform 0.4s ease;
+}
+#selected-work .pf-project-open {
+  width: auto;
+  height: auto;
+  right: auto;
+  left: 50%;
+  bottom: 27px;
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 30px;
+  white-space: nowrap;
+  background: #eff6e5;
+  color: #25331c;
+  font-size: 10px;
+  font-weight: 600;
+  box-shadow: 0 8px 22px #0003;
+  opacity: 0;
+  transform: translate(-50%, 10px);
+}
+#selected-work .pf-project-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 23px;
+}
+#selected-work .pf-project-meta {
+  font-size: 8px;
+  margin-top: 0;
+  letter-spacing: 0.9px;
+}
+#selected-work .pf-project-meta > span:first-child {
+  color: var(--pf-muted);
+}
+#selected-work .pf-project-title {
+  margin-top: 14px;
+}
+#selected-work .pf-project-title h3 {
+  font-size: 21px;
+  letter-spacing: -0.65px;
+}
+#selected-work .pf-project-title > svg {
+  width: 17px;
+  color: var(--pf-muted);
+}
+#selected-work .pf-project-body > p {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--pf-muted);
+}
+#selected-work .pf-tags {
+  margin-top: 19px;
+  margin-bottom: 24px;
+  gap: 6px;
+}
+#selected-work .pf-tags > span {
+  font-size: 9px;
+  padding: 5px 8px;
+  border-radius: 5px;
+}
+#selected-work .pf-project-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 17px;
+  border-top: 1px solid var(--pf-line);
+}
+#selected-work .pf-project-actions > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--pf-fg);
+  font-size: 11px;
+  font-weight: 500;
+  padding-block: 7px;
+}
+#selected-work .pf-project-actions > button svg {
+  color: var(--pf-accent);
+  transition: transform 0.25s;
+}
+#selected-work .pf-project-actions > button:hover svg {
+  transform: translate(3px, -3px);
+}
+#selected-work .pf-project-actions > div {
+  display: flex;
+  gap: 6px;
+}
+#root #selected-work .pf-project-actions a {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--pf-line);
+  border-radius: 50%;
+  color: var(--pf-muted);
+  font-size: 13px;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+#root #selected-work .pf-project-actions a:hover {
+  background: var(--pf-lime);
+  color: #26351a;
+  border-color: var(--pf-lime);
+}
+#selected-work .pf-project:focus-within {
+  border-color: var(--project-ink);
+}
+#selected-work .pf-project-image:focus-visible .pf-project-open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+@media (hover: hover) and (pointer: fine) {
+  #selected-work .pf-project:hover {
+    transform: translateY(-8px);
+    border-color: var(--project-ink);
+    box-shadow:
+      0 20px 45px #0002,
+      0 0 30px var(--project-glow);
+  }
+  #selected-work .pf-project:hover .pf-project-window {
+    transform: rotate(0) translateY(-3px) rotateX(4deg);
+    box-shadow: 0 20px 30px #0004;
+  }
+  #selected-work .pf-project:hover .pf-project-window img {
+    transform: scale(1.035);
+  }
+  #selected-work .pf-project:hover .pf-project-image::before {
+    opacity: 0.14;
+  }
+  #selected-work .pf-project:hover .pf-project-graphic {
+    transform: scale(1.2) translate(-8px, 10px);
+  }
+  #selected-work .pf-project:hover .pf-project-tech-mark {
+    transform: rotate(-8deg) translateY(-6px);
+  }
+  #selected-work .pf-project:hover .pf-project-open {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+@media (max-width: 1100px) and (min-width: 641px) {
+  #selected-work .pf-project-grid {
+    gap: 15px;
+  }
+  #selected-work .pf-project-image {
+    height: 220px;
+    padding-inline: 18px;
+  }
+  #selected-work .pf-project-body {
+    padding: 18px;
+  }
+  #selected-work .pf-project-title h3 {
+    font-size: 17px;
+  }
+  #selected-work .pf-project-meta {
+    font-size: 7px;
+    letter-spacing: 0.3px;
+  }
+  #selected-work .pf-project-body > p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 640px) {
+  #selected-work .pf-project-grid {
+    gap: 24px;
+  }
+  #selected-work .pf-project-image {
+    height: 265px;
+  }
+  #selected-work .pf-project-open {
+    display: none;
+  }
+  #selected-work .pf-project-body {
+    padding: 23px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #selected-work .pf-project,
+  #selected-work .pf-project * {
+    transition: none !important;
+  }
+  #selected-work .pf-project:hover {
+    transform: none;
+  }
+  #selected-work .pf-project:hover .pf-project-window {
+    transform: rotate(0);
+  }
+}

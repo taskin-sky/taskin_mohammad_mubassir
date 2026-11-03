@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from "framer-motion";
 
 const pageVariants = {
   initial: {
@@ -17,17 +17,18 @@ const pageVariants = {
 
 const pageTransition = {
   duration: 0.5,
-  ease: 'easeInOut',
+  ease: "easeInOut",
 };
 
 export default function PageTransition({ children }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
-      initial="initial"
+      initial={reduceMotion ? false : "initial"}
       animate="animate"
-      exit="exit"
+      exit={reduceMotion ? undefined : "exit"}
       variants={pageVariants}
-      transition={pageTransition}
+      transition={reduceMotion ? { duration: 0 } : pageTransition}
       className="w-full"
     >
       {children}

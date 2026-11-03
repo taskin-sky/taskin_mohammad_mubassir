@@ -1,11 +1,11 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 const ThemeContext = createContext();
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
+    throw new Error("useTheme must be used within ThemeProvider");
   }
   return context;
 };
@@ -19,21 +19,16 @@ export const ThemeProvider = ({ children }) => {
     setMounted(true);
 
     // Check localStorage first
-    const savedTheme = localStorage.getItem('theme');
-    const systemPrefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)'
-    ).matches;
-
-    const isDarkMode =
-      savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+    const savedTheme = localStorage.getItem("theme");
+    const isDarkMode = savedTheme !== "light";
 
     setIsDark(isDarkMode);
 
     // Apply theme to document
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
@@ -42,13 +37,13 @@ export const ThemeProvider = ({ children }) => {
     setIsDark(newDarkState);
 
     // Update localStorage
-    localStorage.setItem('theme', newDarkState ? 'dark' : 'light');
+    localStorage.setItem("theme", newDarkState ? "dark" : "light");
 
     // Update document class
     if (newDarkState) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   };
 
